@@ -1,17 +1,42 @@
-from tkinter import ttk, messagebox
+from tkinter import messagebox
+import customtkinter as ctk
 from gui.components.map_window import FenetreCarte
 
-class TabPostgres(ttk.Frame):
+
+class TabPostgres(ctk.CTkFrame):
     def __init__(self, parent, logger, app_ref):
-        super().__init__(parent, padding=15)
+        super().__init__(parent)
         self.logger = logger
         self.app_ref = app_ref
         self.build_ui()
 
     def build_ui(self):
-        ttk.Label(self, text="Module en cours de conception...").pack(pady=10)
-        ttk.Button(self, text="Prévisualiser les données", command=self.run_map).pack(pady=20)
-        ttk.Button(self, text="Charger les données sur Geoserveur", command=self.run_pg).pack(pady=20)
+        label_info = ctk.CTkLabel(
+            self,
+            text="Module d'export GEOSERVEUR / PostgreSQL (En chantier)",
+            font=ctk.CTkFont(size=13, slant="italic")
+        )
+        label_info.pack(pady=20)
+
+        btn_map = ctk.CTkButton(
+            self,
+            text="Prévisualiser la trajectoire sur la carte",
+            font=ctk.CTkFont(size=13, weight="bold"),
+            height=38,
+            command=self.run_map
+        )
+        btn_map.pack(pady=10)
+
+        btn_pg = ctk.CTkButton(
+            self,
+            text="Charger les données sur Geoserver",
+            font=ctk.CTkFont(size=13, weight="bold"),
+            height=38,
+            fg_color="#D35B58",
+            hover_color="#C73E3A",
+            command=self.run_pg
+        )
+        btn_pg.pack(pady=10)
 
     def run_map(self):
         coords = getattr(self.app_ref, 'coordinate_list', None)
@@ -29,4 +54,4 @@ class TabPostgres(ttk.Frame):
         self.logger(f"Trajectoire de vol affichée ({len(coords)} points).")
 
     def run_pg(self):
-        pass
+        messagebox.showinfo("Module en chantier", "Fonctionnalité en cours de développement.")

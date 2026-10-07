@@ -1,35 +1,58 @@
 import threading
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import filedialog, messagebox
+import customtkinter as ctk
 from core.processing import calculer_synthese_photos_vols
 
-class TabSynthese(ttk.Frame):
+
+class TabSynthese(ctk.CTkFrame):
     def __init__(self, parent, logger):
-        super().__init__(parent, padding=15)
+        super().__init__(parent)
         self.logger = logger
         self.build_ui()
 
     def build_ui(self):
-        ttk.Label(self, text="Fichier CSV Log de vol :").grid(row=0, column=0, sticky="w", pady=5)
-        self.entry_csv_log = ttk.Entry(self, width=80)
-        self.entry_csv_log.grid(row=0, column=1, padx=5)
-        ttk.Button(self, text="Parcourir...", command=self.browse_csv_log).grid(row=0, column=2)
+        self.grid_columnconfigure(1, weight=1)
 
-        ttk.Label(self, text="Fichier CSV Métadonnées Photos :").grid(row=1, column=0, sticky="w", pady=5)
-        self.entry_csv_exif = ttk.Entry(self, width=80)
-        self.entry_csv_exif.grid(row=1, column=1, padx=5)
-        ttk.Button(self, text="Parcourir...", command=self.browse_csv_exif).grid(row=1, column=2)
+        # 1. CSV Log de vol
+        label_log = ctk.CTkLabel(self, text="Fichier CSV Log de vol :", anchor="w")
+        label_log.grid(row=0, column=0, padx=15, pady=10, sticky="w")
 
-        ttk.Button(self, text="Générer la Synthèse (Jointure & CQ)", command=self.run_thread).grid(row=2, column=1, pady=20)
+        self.entry_csv_log = ctk.CTkEntry(self, placeholder_text="CSV extrait du log DJI")
+        self.entry_csv_log.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+
+        btn_browse_log = ctk.CTkButton(self, text="Parcourir...", width=110, command=self.browse_csv_log)
+        btn_browse_log.grid(row=0, column=2, padx=15, pady=10)
+
+        # 2. CSV EXIF Photos
+        label_exif = ctk.CTkLabel(self, text="Fichier CSV Photos :", anchor="w")
+        label_exif.grid(row=1, column=0, padx=15, pady=10, sticky="w")
+
+        self.entry_csv_exif = ctk.CTkEntry(self, placeholder_text="CSV extrait des EXIF photos")
+        self.entry_csv_exif.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
+
+        btn_browse_exif = ctk.CTkButton(self, text="Parcourir...", width=110, command=self.browse_csv_exif)
+        btn_browse_exif.grid(row=1, column=2, padx=15, pady=10)
+
+        # 3. Action Synthèse
+        btn_generate = ctk.CTkButton(
+            self,
+            text="Générer la Synthèse (Jointure & CQ)",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            height=40,
+            fg_color="#2FA572",
+            hover_color="#1E6F4C",
+            command=self.run_thread
+        )
+        btn_generate.grid(row=2, column=1, pady=30)
 
     def browse_csv_log(self):
         if f := filedialog.askopenfilename(filetypes=[("Fichiers CSV", "*.csv")]):
-            self.entry_csv_log.delete(0, tk.END)
+            self.entry_csv_log.delete(0, "end")
             self.entry_csv_log.insert(0, f)
 
     def browse_csv_exif(self):
         if f := filedialog.askopenfilename(filetypes=[("Fichiers CSV", "*.csv")]):
-            self.entry_csv_exif.delete(0, tk.END)
+            self.entry_csv_exif.delete(0, "end")
             self.entry_csv_exif.insert(0, f)
 
     def run_thread(self):

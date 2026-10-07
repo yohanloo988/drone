@@ -1,5 +1,10 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
+from tkinter import messagebox
+
+# Configuration du thème global
+ctk.set_appearance_mode("system")  # "System", "Dark", "Light"
+ctk.set_default_color_theme("dark-blue") # "blue", "dark-blue", "green"
+
 from gui.components.log_console import LogConsole
 from gui.tabs.tab_txt_json import TabTxtJson
 from gui.tabs.tab_json_csv import TabJsonCsv
@@ -7,48 +12,41 @@ from gui.tabs.tab_exif_csv import TabExifCsv
 from gui.tabs.tab_synthese import TabSynthese
 from gui.tabs.tab_postgres import TabPostgres
 
-class DroneToolApp(tk.Tk):
+
+class DroneToolApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Traitement de données DJI")
-        self.geometry("900x650")
-
-        self.style = ttk.Style(self)
-        self.style.theme_use("vista")
+        self.title("Traitement de données DJI - Modern UI")
+        self.geometry("950x700")
 
         self.coordinate_list = []
 
-        self.notebook = ttk.Notebook(self)
-        self.notebook.pack(fill="both", expand=True, padx=10, pady=5)
+        # Conteneur d'onglets CustomTkinter
+        self.tabview = ctk.CTkTabview(self)
+        self.tabview.pack(fill="both", expand=True, padx=10, pady=5)
 
+        # Création des onglets
+        self.tab_txt = self.tabview.add("1. TXT ➔ JSON")
+        self.tab_json = self.tabview.add("2. JSON ➔ CSV")
+        self.tab_exif = self.tabview.add("3. EXIF Photos ➔ CSV")
+        self.tab_syn = self.tabview.add("4. Synthèse")
+        self.tab_pg = self.tabview.add("5. GEOSERVEUR")
+
+        # Console de logs
         self.console = LogConsole(self)
 
-        # Instanciation des onglets
-        self.tab_txt_json = TabTxtJson(self.notebook, self.console.log)
-        self.tab_json_csv = TabJsonCsv(self.notebook, self.console.log, self)
-        self.tab_exif_csv = TabExifCsv(self.notebook, self.console.log)
-        self.tab_synthese = TabSynthese(self.notebook, self.console.log)
-        self.tab_postgres = TabPostgres(self.notebook, self.console.log, self)
+        # Instanciation de nos frames dans les onglets
+        self.view_txt = TabTxtJson(self.tab_txt, self.console.log)
+        self.view_txt.pack(fill="both", expand=True)
 
-        self.notebook.add(self.tab_txt_json, text="1. TXT ➔ JSON")
-        self.notebook.add(self.tab_json_csv, text="2. JSON ➔ CSV")
-        self.notebook.add(self.tab_exif_csv, text="3. EXIF Photos ➔ CSV")
-        self.notebook.add(self.tab_synthese, text="4. Synthèse")
-        self.notebook.add(self.tab_postgres, text="5. CSV ➔ GEOSERVEUR (En chantier)")
+        self.view_json = TabJsonCsv(self.tab_json, self.console.log, self)
+        self.view_json.pack(fill="both", expand=True)
 
-        self.build_menu()
+        self.view_exif = TabExifCsv(self.tab_exif, self.console.log)
+        self.view_exif.pack(fill="both", expand=True)
 
-    def build_menu(self):
-        menu_bar = tk.Menu(self)
-        self.config(menu=menu_bar)
+        self.view_synthese = TabSynthese(self.tab_syn, self.console.log)
+        self.view_synthese.pack(fill="both", expand=True)
 
-        menu_aide = tk.Menu(menu_bar, tearoff=0)
-        menu_aide.add_command(label="À propos", command=self.afficher_a_propos)
-        menu_aide.add_command(label="Documentation", command=self.documentation)
-        menu_bar.add_cascade(label="Aide", menu=menu_aide)
-
-    def afficher_a_propos(self):
-        messagebox.showinfo("À propos", "Traitement des données DJI - v1.0\nAuteur : Yohan LOO - DITTT")
-
-    def documentation(self):
-        messagebox.showinfo("Documentation", "https://docs.google.com/document/d/1Kwup5Q3wRzPn8oXIEMro-Y9O-TEpVaOni70hxHsqa98/edit?usp=sharing")
+        self.view_postgres = TabPostgres(self.tab_pg, self.console.log, self)
+        self.view_postgres.pack(fill="both", expand=True)
