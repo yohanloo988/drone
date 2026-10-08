@@ -25,7 +25,7 @@ class TabJsonCsv(ctk.CTkFrame):
 
         btn_convert = ctk.CTkButton(
             self,
-            text="Générer le CSV des Frames",
+            text="Convertir en CSV",
             font=ctk.CTkFont(size=14, weight="bold"),
             height=40,
             fg_color="#1f538d",

@@ -1,7 +1,7 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkintermapview import TkinterMapView
 
-class FenetreCarte(tk.Toplevel):
+class FenetreCarte(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Carte de prévisualisation des vols")

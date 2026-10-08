@@ -2,8 +2,8 @@ import customtkinter as ctk
 from tkinter import messagebox
 
 # Configuration du thème global
-ctk.set_appearance_mode("system")  # "System", "Dark", "Light"
-ctk.set_default_color_theme("dark-blue") # "blue", "dark-blue", "green"
+ctk.set_appearance_mode("Light")  # "System", "Dark", "Light"
+ctk.set_default_color_theme("blue") # "blue", "dark-blue", "green"
 
 from gui.components.log_console import LogConsole
 from gui.tabs.tab_txt_json import TabTxtJson

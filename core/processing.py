@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from core.geo import haversine_distance
+import config
 
 def calculer_synthese_photos_vols(log_csv: str, exif_csv: str) -> tuple[str, int, int]:
     """Exécute la jointure temporelle asof entre le log de vol et les EXIF photo."""
@@ -57,14 +58,8 @@ def calculer_synthese_photos_vols(log_csv: str, exif_csv: str) -> tuple[str, int
 
     df_synthese.loc[mask_hors_couverture, cols_propres_log] = np.nan
 
-    COLONNES_CONSERVEES = [
-        'FileName', 'dt_merge', 'Ecart_Temps_Sec', 'Ecart_Distance_m',
-        'GPS_Latitude', 'GPS_Longitude', 'FNumber', 'ExposureTime', 'ISOSpeedRatings',
-        'FocalLength', 'DJI_AbsoluteAltitude', 'DJI_RelativeAltitude', 'DJI_GimbalPitch',
-        'osd.flyTime', 'osd.latitude', 'osd.longitude', 'osd.height', 'osd.altitude',
-        'osd.pitch', 'osd.roll', 'osd.yaw', 'gimbal.pitch', 'gimbal.roll', 'gimbal.yaw',
-        'osd.gpsNum', 'osd.gpsLevel', 'camera.isPhoto', 'home.latitude', 'home.longitude', 'details.aircraftSn'
-    ]
+    if hasattr(config, 'DEFAULT_EXE_PATH'):
+        COLONNES_CONSERVEES = config.COLONNES_CONSERVEES
 
     cols_disponibles = [col for col in COLONNES_CONSERVEES if col in df_synthese.columns]
     df_synthese_filtre = df_synthese[cols_disponibles]

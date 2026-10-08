@@ -41,7 +41,7 @@ class TabTxtJson(ctk.CTkFrame):
         label_api = ctk.CTkLabel(self, text="Clé d'API DJI Developer :", anchor="w")
         label_api.grid(row=2, column=0, padx=15, pady=10, sticky="w")
 
-        self.entry_api = ctk.CTkEntry(self, placeholder_text="Clé API DJI (Optionnelle selon la version)")
+        self.entry_api = ctk.CTkEntry(self, placeholder_text="Clé API DJI (cf. https://developer.dji.com)")
         self.entry_api.grid(row=2, column=1, padx=10, pady=10, sticky="ew")
         if hasattr(config, 'DJI_API_KEY'):
             self.entry_api.insert(0, config.DJI_API_KEY)

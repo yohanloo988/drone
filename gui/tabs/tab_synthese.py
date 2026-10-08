@@ -36,7 +36,7 @@ class TabSynthese(ctk.CTkFrame):
         # 3. Action Synthèse
         btn_generate = ctk.CTkButton(
             self,
-            text="Générer la Synthèse (Jointure & CQ)",
+            text="Générer la Synthèse",
             font=ctk.CTkFont(size=14, weight="bold"),
             height=40,
             fg_color="#2FA572",
