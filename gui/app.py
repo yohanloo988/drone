@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 
 # Configuration du thème global
-ctk.set_appearance_mode("Light")  # "System", "Dark", "Light"
+ctk.set_appearance_mode("System")  # "System", "Dark", "Light"
 ctk.set_default_color_theme("blue") # "blue", "dark-blue", "green"
 
 from gui.components.log_console import LogConsole
@@ -11,6 +11,7 @@ from gui.tabs.tab_json_csv import TabJsonCsv
 from gui.tabs.tab_exif_csv import TabExifCsv
 from gui.tabs.tab_synthese import TabSynthese
 from gui.tabs.tab_postgres import TabPostgres
+from gui.tabs.tab_video_csv import TabVideoCsv
 
 
 class DroneToolApp(ctk.CTk):
@@ -29,8 +30,9 @@ class DroneToolApp(ctk.CTk):
         self.tab_txt = self.tabview.add("1. TXT ➔ JSON")
         self.tab_json = self.tabview.add("2. JSON ➔ CSV")
         self.tab_exif = self.tabview.add("3. EXIF Photos ➔ CSV")
-        self.tab_syn = self.tabview.add("4. Synthèse")
-        self.tab_pg = self.tabview.add("5. GEOSERVEUR")
+        self.tab_video = self.tabview.add("4. Vidéo MP4/SRT ➔ CSV")
+        self.tab_syn = self.tabview.add("5. Synthèse")
+        self.tab_pg = self.tabview.add("6. GEOSERVEUR")
 
         # Console de logs
         self.console = LogConsole(self)
@@ -44,6 +46,9 @@ class DroneToolApp(ctk.CTk):
 
         self.view_exif = TabExifCsv(self.tab_exif, self.console.log)
         self.view_exif.pack(fill="both", expand=True)
+
+        self.view_video = TabVideoCsv(self.tab_video, self.console.log, self)
+        self.view_video.pack(fill="both", expand=True)
 
         self.view_synthese = TabSynthese(self.tab_syn, self.console.log)
         self.view_synthese.pack(fill="both", expand=True)

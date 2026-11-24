@@ -25,11 +25,14 @@ DB_PASSWORD = ""
 DB_SCHEMA = ""
 
 # PostgreSQL : filtrage des colonnes
-COLONNES_CONSERVEES = [
-        'FileName', 'dt_merge', 'Ecart_Temps_Sec', 'Ecart_Distance_m',
-        'GPS_Latitude', 'GPS_Longitude', 'FNumber', 'ExposureTime', 'ISOSpeedRatings',
-        'FocalLength', 'DJI_AbsoluteAltitude', 'DJI_RelativeAltitude', 'DJI_GimbalPitch',
-        'osd.flyTime', 'osd.latitude', 'osd.longitude', 'osd.height', 'osd.altitude',
-        'osd.pitch', 'osd.roll', 'osd.yaw', 'gimbal.pitch', 'gimbal.roll', 'gimbal.yaw',
-        'osd.gpsNum', 'osd.gpsLevel', 'camera.isPhoto', 'home.latitude', 'home.longitude', 'details.aircraftSn'
-    ]
+# COLONNES_CONSERVEES = [
+#         'FileName', 'dt_merge', 'Ecart_Temps_Sec', 'Ecart_Distance_m',
+#         'GPS_Latitude', 'GPS_Longitude', 'FNumber', 'ExposureTime', 'ISOSpeedRatings',
+#         'FocalLength', 'DJI_AbsoluteAltitude', 'DJI_RelativeAltitude', 'DJI_GimbalPitch',
+#         'osd.flyTime', 'osd.latitude', 'osd.longitude', 'osd.height', 'osd.altitude',
+#         'osd.pitch', 'osd.roll', 'osd.yaw', 'gimbal.pitch', 'gimbal.roll', 'gimbal.yaw',
+#         'osd.gpsNum', 'osd.gpsLevel', 'camera.isPhoto', 'home.latitude', 'home.longitude', 'details.aircraftSn'
+#     ]
+
+DEFAULT_EXIFTOOL_PATH = r"C:\Users\yohan.loo\PycharmProjects\drone\utils\exiftool-13.64_64\exiftool-13.64_64\exiftool.exe"
+EXIFTOOL_CONFIG_PATH = r"C:\Users\yohan.loo\PycharmProjects\drone\utils\exiftool.config"

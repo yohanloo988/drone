@@ -1,9 +1,30 @@
+import io
+import threading
+import time
 from tkinter import messagebox
 import customtkinter as ctk
 import config
 from gui.components.map_window import FenetreCarte
 import psycopg2
 from psycopg2 import sql
+import tqdm
+
+
+class TQDMToLogger(io.StringIO):
+    """Redirige les sorties textuelles de tqdm vers la console GUI."""
+
+    def __init__(self, logger):
+        super().__init__()
+        self.logger = logger
+
+    def write(self, buf):
+        # Nettoie les retours à la ligne et caractères de contrôle terminal (\r)
+        message = buf.strip('\r\n\t ')
+        if message:
+            self.logger(message)
+
+    def flush(self):
+        pass
 
 
 class TabPostgres(ctk.CTkFrame):
@@ -32,7 +53,7 @@ class TabPostgres(ctk.CTkFrame):
         )
         btn_map.pack(pady=10)
 
-        # 2. Sélection du Télépilote (Label + ComboBox élargie)
+        # 2. Sélection du Télépilote
         label_pilot = ctk.CTkLabel(
             self,
             text="Télépilote de la mission :",
@@ -56,13 +77,13 @@ class TabPostgres(ctk.CTkFrame):
         # 3. Bouton d'export PostgreSQL
         btn_pg = ctk.CTkButton(
             self,
-            text="Charger les données sur Geoserver",
+            text="Charger les données sur GeoserverV",
             font=ctk.CTkFont(size=13, weight="bold"),
             height=38,
             width=280,
             fg_color="#D35B58",
             hover_color="#C73E3A",
-            command=self.run_pg
+            command=self.run_pg_thread
         )
         btn_pg.pack(pady=10)
 
@@ -81,19 +102,24 @@ class TabPostgres(ctk.CTkFrame):
         map_win.ajouter_marqueur(dernier[0], dernier[1], "Atterrissage")
         self.logger(f"Trajectoire de vol affichée ({len(coords)} points).")
 
+    def run_pg_thread(self):
+        """Lance l'export PostgreSQL dans un thread séparé pour ne pas geler l'IHM."""
+        threading.Thread(target=self.run_pg, daemon=True).start()
+
     def run_pg(self):
         table_name = getattr(self.app_ref, 'table', None)
         if not table_name:
             messagebox.showwarning("Attention", "Aucune table PostgreSQL n'a été spécifiée.")
             return
 
-        # Récupération du télépilote sélectionné dans l'IHM
         telepilote_selectionne = self.combo_pilot.get()
 
         self.logger(f"Connexion à la base PostGIS {config.DB_NAME}...")
         self.logger(f"Télépilote sélectionné : {telepilote_selectionne}")
 
-        # Construction dynamique sécurisée avec insertion du champ telepilote
+        # Récupération des données à insérer (ex: coordonnées GPS ou lignes de synthèse)
+        coords = getattr(self.app_ref, 'coordinate_list', [(-21.448, 165.587)])
+
         query = sql.SQL("INSERT INTO {table} (telepilote) VALUES (%s)").format(
             table=sql.Identifier(table_name)
         )
@@ -107,12 +133,18 @@ class TabPostgres(ctk.CTkFrame):
                     port=config.DB_PORT
             ) as conn:
                 with conn.cursor() as cur:
-                    # Le paramètre %s empêche tout problème d'injection SQL
-                    cur.execute(query, (telepilote_selectionne,))
+                    # Redirection de tqdm vers la console
+                    tqdm_out = TQDMToLogger(self.logger)
 
-            self.logger(f"Insertion réussie dans la table {table_name}.")
-            messagebox.showinfo("Succès",
-                                f"Données insérées avec succès pour {telepilote_selectionne} dans {table_name} !")
+                    self.logger("Début du chargement des données...")
+                    for pt in tqdm.tqdm(coords, file=tqdm_out, desc="Export PostGIS", mininterval=0.3):
+                        cur.execute(query, (telepilote_selectionne,))
+
+            self.logger(f"Insertion réussie de {len(coords)} éléments dans la table {table_name}.")
+            messagebox.showinfo(
+                "Succès",
+                f"Données insérées avec succès pour {telepilote_selectionne} dans {table_name} !"
+            )
 
         except psycopg2.Error as e:
             self.logger(f"Erreur PostgreSQL : {e}")
